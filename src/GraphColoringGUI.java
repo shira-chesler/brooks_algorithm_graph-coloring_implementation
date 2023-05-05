@@ -3,8 +3,8 @@ import javax.swing.border.EmptyBorder;
 import java.awt.*;
 
 /**
- * The GraphColoringGUI class that extends JFrame and is responsible for displaying
- * the graph coloring process and results.
+ * The GraphColoringGUI class is responsible for displaying the graph coloring process and results.
+ * It extends JFrame and provides a visual interface for graph coloring operations.
  */
 public class GraphColoringGUI extends JFrame {
     private GraphPanel graphPanel;
@@ -17,14 +17,18 @@ public class GraphColoringGUI extends JFrame {
     public GraphColoringGUI(Graph graph) {
         setTitle("Graph Coloring");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(800, 600);
+        setSize(800, 500);
 
+        // Initialize graph panel with the given graph and add it to the frame
         graphPanel = new GraphPanel(graph);
         add(graphPanel, BorderLayout.CENTER);
+
+        this.setLocation(0, 0);
 
         // Create and add the status label
         graphPanel.statusLabel = new JLabel("Starting...");
         graphPanel.statusLabel.setBorder(new EmptyBorder(5, 10, 5, 10));
+        graphPanel.statusLabel.setFont(new Font("Arial", Font.PLAIN, 18));
         add(graphPanel.statusLabel, BorderLayout.SOUTH);
         setVisible(true);
     }

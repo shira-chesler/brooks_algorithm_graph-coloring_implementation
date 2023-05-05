@@ -6,19 +6,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * The GraphPanel class that extends JPanel and is responsible for visualizing
- * a graph, its vertices, edges, and vertex colors.
+ * The GraphPanel class is responsible for visualizing a graph, its vertices, edges,
+ * and vertex colors. It extends JPanel and provides custom drawing for graph representation.
  */
 class GraphPanel extends JPanel {
     private Graph graph;
     private int[] colors;
-    private Map<Integer, Point> vertexPositions; // Add this instance variable
+    private Map<Integer, Point> vertexPositions;
     boolean first_run = true;
     JLabel statusLabel;
     JLabel chromaticIndexLabel;
 
     /**
      * Constructs a new GraphPanel object with the given graph.
+     *
      * @param graph The graph to be visualized.
      */
     public GraphPanel(Graph graph) {
@@ -51,6 +52,7 @@ class GraphPanel extends JPanel {
 
     /**
      * Sets the colors of the vertices and repaints the panel.
+     *
      * @param colors An array of integers representing the colors assigned to each vertex.
      */
     public void setColors(int[] colors) {
@@ -60,6 +62,7 @@ class GraphPanel extends JPanel {
 
     /**
      * Custom paintComponent method responsible for drawing the vertices, edges, and vertex colors.
+     *
      * @param g Graphics object for rendering operations.
      */
     @Override
@@ -69,11 +72,14 @@ class GraphPanel extends JPanel {
         int radius = 20;
         int padding = 50;
 
+        // Define a color palette for vertex coloring
         Color[] colorPalette = {Color.BLUE, Color.RED, Color.GREEN, Color.YELLOW, Color.MAGENTA, Color.CYAN, Color.ORANGE, Color.PINK, Color.BLACK};
         if (first_run) {
             first_run = false;
             calculateVertexPositions();
         }
+
+        // Draw edges between vertices
         for (int i = 0; i < graph.getVertices(); i++) {
             for (int neighbor : graph.getAdjacencyList()[i]) {
                 if (i < neighbor) {
@@ -84,6 +90,7 @@ class GraphPanel extends JPanel {
             }
         }
 
+        // Draw and color vertices
         for (int i = 0; i < graph.getVertices(); i++) {
             Point p = vertexPositions.get(i);
             if (colors != null && colors[i] != -1) {
@@ -100,6 +107,7 @@ class GraphPanel extends JPanel {
 
     /**
      * Sets the status message to be displayed in the GUI.
+     *
      * @param statusMessage A string representing the status message to be displayed.
      */
     public void setStatus(String statusMessage) {
@@ -108,6 +116,7 @@ class GraphPanel extends JPanel {
 
     /**
      * Displays the chromatic index of the graph in the panel.
+     *
      * @param chromaticIndex An integer representing the chromatic index of the graph.
      */
     public void displayChromaticIndex(int chromaticIndex) {

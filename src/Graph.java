@@ -82,6 +82,7 @@ public class Graph {
      * @return True if the graph contains an odd cycle, otherwise false.
      */
     public boolean isOddCycle() {
+        if (getMaxDegree() != 2) return false;
         boolean[] visited = new boolean[vertices];
         int[] levels = new int[vertices];
         for (int i = 0; i < vertices; i++) {
@@ -141,7 +142,6 @@ public class Graph {
         return false;
     }
 
-
     /**
      * Performs a depth-first search to determine the connectedness of the graph.
      *
@@ -151,6 +151,9 @@ public class Graph {
     private void dfsConnected(int node, boolean[] visited) {
         visited[node] = true;
 
+        if (adjacencyList[node] == null) return;
+
+        // Traverse all neighbors of the current node
         for (int neighbor : adjacencyList[node]) {
             if (!visited[neighbor]) {
                 dfsConnected(neighbor, visited);
@@ -158,4 +161,41 @@ public class Graph {
         }
     }
 
+    /**
+     * Checks if there is an edge between two vertices.
+     *
+     * @param y The first vertex.
+     * @param z The second vertex.
+     * @return True if there is an edge between y and z, otherwise false.
+     */
+    public boolean hasEdge(int y, int z) {
+        return this.adjacencyList[y].contains(z);
+    }
+
+    /**
+     * Creates a deep copy of the graph.
+     *
+     * @return A new Graph object with the same structure as the original.
+     */
+    public Graph copy() {
+        Graph tmp = new Graph(vertices);
+        for (int i = 0; i < this.adjacencyList.length; i++) {
+            for (int vertex : this.adjacencyList[i]) {
+                if (tmp.adjacencyList[i].contains(vertex)) {
+                    continue;
+                }
+                tmp.addEdge(i, vertex);
+            }
+        }
+        return tmp;
+    }
+
+    /**
+     * Removes a vertex from the graph by setting its adjacency list entry to null.
+     *
+     * @param z The vertex to remove.
+     */
+    public void removeVertex(int z) {
+        this.adjacencyList[z] = null;
+    }
 }
