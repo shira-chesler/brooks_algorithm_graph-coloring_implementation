@@ -1,7 +1,8 @@
-
+import static java.lang.Thread.sleep;
 
 public class Main {
-    public static void main(String[] args) {
+
+    public static void main(String[] args) throws InterruptedException {
 //        Graph graph = new Graph(6);
 //        graph.addEdge(0, 1);
 //        graph.addEdge(0, 2);
@@ -145,20 +146,42 @@ public class Main {
 //        graph.addEdge(5, 6);
 //
 
-        Graph graph = new Graph(6);
-        graph.addEdge(0, 1);
-        graph.addEdge(0, 2);
-        graph.addEdge(0, 3);
-        graph.addEdge(1, 2);
-        graph.addEdge(1, 4);
-        graph.addEdge(2, 5);
-        graph.addEdge(3, 4);
-        graph.addEdge(3, 5);
-        graph.addEdge(4, 5);
-
+//        Graph graph = new Graph(6);
+//        graph.addEdge(0, 1);
+//        graph.addEdge(0, 2);
+//        graph.addEdge(0, 3);
+//        graph.addEdge(1, 2);
+//        graph.addEdge(1, 4);
+//        graph.addEdge(2, 5);
+//        graph.addEdge(3, 4);
+//        graph.addEdge(3, 5);
+//        graph.addEdge(4, 5);
+//
+//        GraphColoringGUI gui = new GraphColoringGUI(graph);
+//        GraphColoring grpc = new GraphColoring(graph);
+//        grpc.brooksAlgorithm(gui);
+        GraphInputGUI guix = new GraphInputGUI();
+        while (!guix.Getfinished()){
+            try{
+                sleep(1000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        Graph graph = guix.getInput_graph();
         GraphColoringGUI gui = new GraphColoringGUI(graph);
         GraphColoring grpc = new GraphColoring(graph);
         grpc.brooksAlgorithm(gui);
+//        0 1
+//        1 2
+//        1 3
+//        1 4
+//        0 2
+//        0 3
+//        0 4
+//        2 3
+//        2 4
+//        3 4
     }
 }
 
