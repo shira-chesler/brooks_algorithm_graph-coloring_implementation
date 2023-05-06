@@ -168,7 +168,7 @@ public class Main {
                 throw new RuntimeException(e);
             }
         }
-        Graph graph = guix.getInput_graph();
+        Graph graph = guix.getInputGraph();
         GraphColoringGUI gui = new GraphColoringGUI(graph);
         GraphColoring grpc = new GraphColoring(graph);
         grpc.brooksAlgorithm(gui);
