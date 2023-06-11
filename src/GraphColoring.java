@@ -37,16 +37,16 @@ public class GraphColoring {
         // Handle clique and odd cycle cases - because Brooks' theorem is not applying to them as well
         if (graph.isClique() || graph.isOddCycle()) {
             if (graph.isClique()) {
-                colors = colorVerticesGreedyByOrder(maxDegree, gui, "The graph is a clique, ", null, null);
+                colors = colorVerticesGreedyByOrder(maxDegree, gui, "The graph is a clique, ", null, null, false, 0, 0);
             } else {
-                colors = colorVerticesGreedyByOrder(maxDegree, gui, "The graph is an odd cycle, ", null, null);
+                colors = colorVerticesGreedyByOrder(maxDegree, gui, "The graph is an odd cycle, ", null, null, false, 0, 0);
             }
         }
         // Step 1: Handle cases where maxDegree is 0, 1, or 2
         else {
             // If the graph is 2-colorable (path or non-odd cycle)
             if (maxDegree < 3) {
-                colors = colorVerticesGreedyByOrder(maxDegree, gui, "Degree is smaller than 3, ", null, null);
+                colors = colorVerticesGreedyByOrder(maxDegree, gui, "Degree is smaller than 3, ", null, null, false, 0, 0);
             } else {
                 // Find an ordering of the vertices
                 SpanningTreeOrdering sto = new SpanningTreeOrdering(graph);
@@ -55,7 +55,7 @@ public class GraphColoring {
                 // If there is a vertex with max degree smaller than Δ(G)
                 if (ordering != null) {
                     TreeGUI anotherGui = new TreeGUI(sto.getTree());
-                    colors = colorVerticesGreedyByOrder(maxDegree, gui, "Created a spanning tree rooted in " + sto.getRoot() + " - deg(" + sto.getRoot() + ")<Δ(G): ", ordering, anotherGui);
+                    colors = colorVerticesGreedyByOrder(maxDegree, gui, "Created a spanning tree rooted in " + sto.getRoot() + " - deg(" + sto.getRoot() + ")<Δ(G): ", ordering, anotherGui, false, 0, 0);
                 } else {
                     // Color using cut vertex
                     CutVertexFinder cvf = new CutVertexFinder(graph);
@@ -70,15 +70,7 @@ public class GraphColoring {
                         withoutYAndZ.removeVertex(specVertices[2]);
                         SpanningTreeOrdering stoLast = new SpanningTreeOrdering(withoutYAndZ, specVertices[0]);
                         TreeGUI treeWithoutTwoVerticesGui = new TreeGUI(stoLast.getTree(), specVertices[0]);
-                        colors = colorVerticesGreedyByOrder(maxDegree, gui, "Created a spanning tree rooted in " + specVertices[0] + " without vertices " + specVertices[1] + ", and " + specVertices[2], stoLast.findOrdering(), treeWithoutTwoVerticesGui);
-
-                        // Determine the minimum available color for the two special vertices and assign it to them
-                        int minAvColor = Math.max(leastAvailableColor(maxDegree, colors, specVertices[1]), leastAvailableColor(maxDegree, colors, specVertices[2]));
-                        colors[specVertices[1]] = minAvColor;
-                        colors[specVertices[2]] = minAvColor;
-
-                        // Update the GUI with the new colors, indicating that the two special vertices have been colored
-                        gui.updateColors(colors, "Colored the two vertices " + specVertices[1] + ", and " + specVertices[2] + " with the least available color: " + minAvColor);
+                        colors = colorVerticesGreedyByOrder(maxDegree, gui, "Created a spanning tree rooted in " + specVertices[0] + " without vertices " + specVertices[1] + ", and " + specVertices[2], stoLast.findOrdering(), treeWithoutTwoVerticesGui, true, specVertices[1], specVertices[2]);
 
                         // Sleep for 5 seconds to allow the user to observe the changes
                         try {
@@ -107,7 +99,7 @@ public class GraphColoring {
      * @param tgui          A TreeGUI object to update as the tree is being colored, or null if not needed.
      * @return An array containing the colors of the vertices.
      */
-    private int[] colorVerticesGreedyByOrder(int maxDegree, GraphColoringGUI gui, String added_message, int[] ordering, TreeGUI tgui) {
+    private int[] colorVerticesGreedyByOrder(int maxDegree, GraphColoringGUI gui, String added_message, int[] ordering, TreeGUI tgui, boolean two_first, int first, int second) {
         // Check if the ordering array is provided
         if (ordering == null) {
             // If not provided, initialize it with default ordering (0, 1, 2, ..., n-1)
@@ -120,6 +112,22 @@ public class GraphColoring {
         // Initialize the colors array and set all elements to -1 (unassigned)
         int[] colors = new int[graph.getVertices()];
         Arrays.fill(colors, -1);
+
+        // Need to color the two vertices y,z first
+        if (two_first) {
+            colors[first] = colors[second] = 0;
+            //giving them the same color
+            if (tgui != null) {
+                tgui.updateColors(colors, "Giving colors to 2 vertices that are not in the tree");
+            }
+            gui.updateColors(colors, added_message + "Coloring vertex " + first + " with color " + 0);
+            gui.updateColors(colors, added_message + "Coloring vertex " + second + " with color " + 0);
+            try {
+                sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
 
         // Iterate through the provided ordering of vertices
         for (int j : ordering) {
@@ -267,8 +275,8 @@ public class GraphColoring {
         TreeGUI secondTreeGui = new TreeGUI(stoSecond.getTree());
 
         // Color the vertices of the two subgraphs using the greedy algorithm
-        int[] colors1 = colorVerticesGreedyByOrder(firstSub.getSubgraph().getMaxDegree(), gui, "Created first spanning tree rooted in " + stoFirst.getRoot(), stoFirst.findOrdering(), firstTreeGui);
-        int[] colors2 = colorVerticesGreedyByOrder(secondSub.getSubgraph().getMaxDegree(), gui, "Created second tree rooted in " + stoSecond.getRoot(), stoSecond.findOrdering(), secondTreeGui);
+        int[] colors1 = colorVerticesGreedyByOrder(firstSub.getSubgraph().getMaxDegree(), gui, "Created first spanning tree rooted in " + stoFirst.getRoot(), stoFirst.findOrdering(), firstTreeGui, false, 0, 0);
+        int[] colors2 = colorVerticesGreedyByOrder(secondSub.getSubgraph().getMaxDegree(), gui, "Created second tree rooted in " + stoSecond.getRoot(), stoSecond.findOrdering(), secondTreeGui, false, 0, 0);
 
         // If the cutNode has different colors in the two subgraphs, repaint one of the subgraphs
         if (colors2[cutNode] != colors1[cutNode]) {
